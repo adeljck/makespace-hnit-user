@@ -7,14 +7,69 @@
       <el-card>
         <el-form ref="submitForm" :model="submitForm" :rules="submitRules" label-width="80px"
                  :label-position="position">
-          <el-row :gutter="20">
-            <el-col :span="12">
+          <el-row :gutter="10">
+            <el-col :span="12" :pull="1">
               <el-form-item prop="name">
                 <el-input v-model="submitForm.name" clearable placeholder="企业名称"></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="12">
-              <div class="grid-content bg-purple"></div>
+            <el-col :span="12" :pull="1">
+              <el-form-item prop="name">
+                <el-input v-model="submitForm.user" clearable placeholder="企业官网"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="12" :pull="1">
+              <el-form-item prop="name">
+                <el-input v-model="submitForm.name" clearable placeholder="申请人姓名"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" :pull="1">
+              <el-form-item prop="name">
+                <el-input v-model="submitForm.user" clearable placeholder="申请人身份证"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="12" :pull="1">
+              <el-form-item prop="name">
+                <el-input v-model="submitForm.name" clearable placeholder="公司电话"></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="12" :pull="1">
+              <el-form-item prop="name">
+                <el-input v-model="submitForm.user" clearable placeholder="公司邮箱"></el-input>
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row :gutter="10">
+            <el-col :span="12" :pull="1">
+              <el-select v-model="submitForm.industry" placeholder="所属行业"
+                         style="width: 88%;margin-left: 12%">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+            </el-col>
+            <el-form-item prop="name">
+              <el-col :span="12" :pull="1">
+                <el-date-picker
+                  v-model="submitForm.buildtime"
+                  type="date"
+                  placeholder="创立日期"
+                  :size="large"
+                  style="width: 93%;margin-left: 13%">
+                </el-date-picker>
+              </el-col>
+            </el-form-item>
+          </el-row>
+          <el-row :span="12">
+            <el-col>
+
             </el-col>
           </el-row>
         </el-form>
@@ -29,9 +84,27 @@
     data() {
       return {
         submitForm: {
-          name:""
+          name: "",
+          industry: "",
+          buildtime: "",
         },
         submitRules: {},
+        options: [{
+          value: '计算机/互联网',
+          label: '计算机/互联网'
+        }, {
+          value: '保险',
+          label: '保险'
+        }, {
+          value: '金融',
+          label: '金融'
+        }, {
+          value: '通讯',
+          label: '通讯'
+        }, {
+          value: '军工',
+          label: '军工'
+        }],
       }
     },
     methods: {}
