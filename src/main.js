@@ -12,7 +12,6 @@ import animate from 'animate.css'
 import '../src/assets/theme/index.css'
 import VueWechatTitle from 'vue-wechat-title'
 import global from '../static/global/global.css'
-
 Vue.use(VueWechatTitle)
 Vue.use(VueParticles);
 Vue.config.productionTip = false;

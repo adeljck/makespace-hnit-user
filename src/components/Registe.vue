@@ -96,7 +96,7 @@
             {
               type: 'email',//要检验的类型（number，email，date等）
               message: '请输入正确的邮箱地址',
-              trigger: ['blur', 'change']
+              trigger: ['change']
             }
           ],
           phone: [{
