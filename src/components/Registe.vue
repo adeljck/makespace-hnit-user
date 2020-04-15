@@ -81,7 +81,6 @@
           email: '',
           password: '',
           repassword: '',
-          avatar: "https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif?imageView2/1/w/80/h/80"
         },
         rules: {
           name: [
@@ -127,20 +126,20 @@
             trigger: 'change'
           }],
           sid: [{
-            min:11,
-            max:11,
+            min: 11,
+            max: 11,
             required: true,
             pattern: /^1\d{10}$/,//可以写正则表达式呦呦呦
             message: '请正确填写你的学号',
             trigger: 'blur'
           }],
           password: [
-            { required: true, message: '请输入密码', trigger: 'blur' },
-            { min: 7, max: 16, message: '密码长度必须是3-8位', trigger: 'change' }
+            {required: true, message: '请输入密码', trigger: 'blur'},
+            {min: 7, max: 16, message: '密码长度必须是3-8位', trigger: 'change'}
           ],
           repassword: [
-            { required: true, message: '请再次输入密码', trigger: 'blur' },
-            { validator: validatePass, trigger: 'change' }
+            {required: true, message: '请再次输入密码', trigger: 'blur'},
+            {validator: validatePass, trigger: 'change'}
           ]
         },
         academys: [{
@@ -177,7 +176,13 @@
         this.loading = true;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.$axios.post('registe', this.ruleForm).then(
+              res => {
+                if (res.data.status != 200){
+                  console.log(res.data)
+                }
+              }
+            )
             this.loading = false
           } else {
             console.log('error submit!!');

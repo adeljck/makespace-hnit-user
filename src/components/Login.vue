@@ -12,8 +12,8 @@
         </div>
         <el-form :model="formData" :rules="rules" label-width="100px" style="margin-top: 20px;width: 90%" ref="formData"
                  :status-icon="true">
-          <el-form-item label="用户名" prop="userName" style="margin-bottom: 50px;width: 300px" class="input1">
-            <el-input class="input1" v-model="formData.userName" placeholder="手机号/学号"
+          <el-form-item label="用户名" prop="username" style="margin-bottom: 50px;width: 300px" class="input1">
+            <el-input class="input1" v-model="formData.username" placeholder="邮箱"
                       style="width: 100%;"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password" style="margin-bottom: 50px;width: 300px;" class="input1">
@@ -39,15 +39,15 @@
       return {
         input: '',
         formData: {
-          userName: '',
+          username: '',
           password: ''
         },
         rules: {
           password: [
             {required: true, message: '请输入密码', trigger: 'blur'}
           ],
-          userName: [
-            {required: true, message: '请输入用户名', trigger: 'blur'}
+          username: [
+            {required: true, message: '请输入邮箱', trigger: 'blur'}
           ]
         }
       }

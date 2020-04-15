@@ -16,7 +16,7 @@ Vue.use(VueWechatTitle)
 Vue.use(VueParticles);
 Vue.config.productionTip = false;
 Vue.prototype.$axios = axios;
-
+axios.defaults.baseURL = "http://127.0.0.1:3000/api/v1/"
 Vue.use(ElementUI);
 // axios.defaults.withCredentials=true;
 /* eslint-disable no-new */
