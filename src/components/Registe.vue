@@ -182,16 +182,20 @@
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$axios.post('registe', this.ruleForm).then(
-            response => {
-              console.log(response.data)
-            })
+              response => {
+                if (response.data.status == 200) {
+                  this.$message({
+                    message: "注册成功,正在跳转至登陆页",
+                    type: "success"
+                  })
+                  this.$router.push({path: '/Login'})
+                }
+              })
           } else {
             console.log('error submit!!');
             return false;
           }
         });
-        this.loading = false;
-        this.disabled = false;
       }
     }
   }

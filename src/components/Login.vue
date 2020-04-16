@@ -58,14 +58,16 @@
           if (valid) {
             console.log(this.formData)
             this.$axios.post('login', this.formData).then(
-              res => {
-                if (res.data.status != 200){
-                  console.log(res.data)
+              response => {
+                if (response.data.status != 200){
+                  console.log(response.data)
                 }else{
                   this.$message({
                     message: "登陆成功,正在跳转至首页",
                     type: "success"
                   })
+                  this.$router.push({path: '/'})
+                  console.log(response.data)
                 }
               }
             )
