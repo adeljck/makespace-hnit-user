@@ -51,7 +51,9 @@
                     placeholder="重复密码"></el-input>
         </el-form-item>
       </el-form>
-      <el-button type="primary" style="width: 100%" @click="submitForm('ruleForm')" :loading="loading">点我注册</el-button>
+      <el-button type="primary" style="width: 100%" @click="submitForm('ruleForm')" :loading="loading"
+                 :disabled="disabled">点我注册
+      </el-button>
       <el-button style="float: right; padding: 3px 0" type="text" @click="login">已有账号?登陆</el-button>
     </el-card>
   </div>
@@ -164,7 +166,9 @@
           value: "材化学院",
           labell: "材化学院"
         }],
-        loading: false
+        loading: false,
+        disabled: false,
+        datas: ""
       }
     },
 
@@ -174,22 +178,20 @@
       },
       submitForm(formName) {
         this.loading = true;
+        this.disabled = true;
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$axios.post('registe', this.ruleForm).then(
-              res => {
-                if (res.data.status != 200){
-                  console.log(res.data)
-                }
-              }
-            )
-            this.loading = false
+            response => {
+              console.log(response.data)
+            })
           } else {
             console.log('error submit!!');
-            this.loading = false;
             return false;
           }
         });
+        this.loading = false;
+        this.disabled = false;
       }
     }
   }
