@@ -16,18 +16,18 @@
             <use class="text" xlink:href="#s-text"></use>
           </svg>
         </el-menu-item>
-        <el-submenu index="1" style="float: right" v-if="isLogin">
-          <template slot="title">我的</template>
+        <el-submenu index="1" style="float: right" v-if="this.$loginStatus">
+          <template slot="title">{{this.$store.username}}</template>
           <el-menu-item index="5-1" class="el-icon-user-solid">个人中心</el-menu-item>
           <el-menu-item index="5-2" class="el-icon-baseball">创建团队</el-menu-item>
           <el-menu-item index="5-3" class="el-icon-delete">退出登陆</el-menu-item>
         </el-submenu>
-        <el-menu-item style="float: right;" index="2" v-if="!isLogin">
+        <el-menu-item style="float: right;" index="2" v-if="!this.$loginStatus">
           <div>
             <i class="el-icon-bell"></i>登录
           </div>
         </el-menu-item>
-        <el-menu-item style="float: right;" index="3" v-if="!isLogin">
+        <el-menu-item style="float: right;" index="3" v-if="!this.$loginStatus">
           <div>
             <i class="el-icon-bell"></i>注册
           </div>
@@ -66,7 +66,6 @@
     name: "Header",
     data() {
       return {
-        isLogin: false,
         activeIndex: '0',
       };
 
@@ -79,7 +78,7 @@
         this.$router.push({path: '/NewApply'})
       },
       logout() {
-        this.isLogin = false
+        this.$store.state.loginStatus = false
       },
       handleSelect(index) {
         console.log(index)

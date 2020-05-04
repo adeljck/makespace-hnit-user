@@ -43,7 +43,8 @@ export default new Router({
       name: 'Require',
       component: Require,
       meta:{
-        title:"需求大厅"
+        title:"需求大厅",
+        requirezAuth: true
       }
     },
     {

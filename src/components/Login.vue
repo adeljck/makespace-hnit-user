@@ -20,13 +20,14 @@
             <el-input class="input2" type="password" v-model="formData.password" placeholder="密码"
                       style="width: 200px;background: rgba(255,255,255,0.8)"></el-input>
           </el-form-item>
-          <el-button  style="width: 50%;margin-left: 10%;background-color: #6798d8;color: white;margin-top: -20px;" @click="linkto">
+          <el-button style="width: 50%;margin-left: 10%;background-color: #6798d8;color: white;margin-top: -20px;"
+                     @click="linkto">
             登陆
           </el-button>
         </el-form>
         <br>
-            <el-button type="text" style="color:green" @click="toregiste">还没有账号?注册</el-button>
-            <el-button type="text" style="color: red" @click="toforget">忘记密码</el-button>
+        <el-button type="text" style="color:green" @click="toregiste">还没有账号?注册</el-button>
+        <el-button type="text" style="color: red" @click="toforget">忘记密码</el-button>
         <el-button type="text" style="color: gray" @click="back">返回首页</el-button>
       </el-card>
     </div>
@@ -59,21 +60,29 @@
             console.log(this.formData)
             this.$axios.post('login', this.formData).then(
               response => {
-                if (response.data.status != 200){
+                if (response.data.status != 200) {
                   console.log(response.data)
-                }else{
+                } else {
                   this.$message({
                     message: "登陆成功,正在跳转至首页",
                     type: "success"
-                  })
+                  });
+                  localStorage.setItem("token", response.data.data.token);
+                  localStorage.setItem("user", response.data.data.name);
+                  localStorage.setItem("_id", response.data.data._id);
                   this.$router.push({path: '/'})
-                  console.log(response.data)
                 }
+              }
+            ).catch(
+              err => {
+                this.$message({
+                  message: "登陆失败,服务器开了个小差",
+                  type: "warning"
+                })
               }
             )
             this.loading = false
           } else {
-            console.log('error submit!!');
             this.loading = false;
             return false;
           }
@@ -81,13 +90,13 @@
 
       },
       toregiste() {
-        this.$router.push({path:'/Registe'})
+        this.$router.push({path: '/Registe'})
       },
       toforget() {
         alert("forget")
       },
-      back(){
-        this.$router.push({path:'/'})
+      back() {
+        this.$router.push({path: '/'})
       }
     }
   }
@@ -96,7 +105,7 @@
   /*@import url("//unpkg.com/element-ui@2.4.4/lib/theme-chalk/index.css");*/
 
   .img4login {
-    background: url('../assets/images/loginbg.jpg') center top ;
+    background: url('../assets/images/loginbg.jpg') center top;
     background-size: 100%;
     width: 100vw;
     height: 100vh;

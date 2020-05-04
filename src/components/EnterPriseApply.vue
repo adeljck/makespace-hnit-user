@@ -61,7 +61,7 @@
             <el-col :span="12" :pull="1">
               <el-form-item prop="buildtime">
                 <el-date-picker
-                  v-model="submitForm.buildtime"
+                  v-model="submitForm.date"
                   type="date"
                   placeholder="创立日期"
                   style="width: 100%">
@@ -110,7 +110,7 @@
           phone: "",
           email: "",
           industry: "",
-          buildtime: "",
+          date: "",
           companycode: "",
           info: "",
         },
@@ -160,11 +160,11 @@
             message: '请选择日期',
             trigger: 'change'
           }],
-          companycode: [{required: true, message: '必填', trigger: 'blur'},],
-          legalid: [{required: true, message: '必填', trigger: 'blur'},],
+          companycode: [{required: true, message: '必填', trigger: 'blur'},{min: 18, max: 18, message: '请输入18位统一性用代码', trigger: 'blur'}],
+          legalid: [{required: true, message: '必填', trigger: 'blur'},{min: 18, max: 18, message: '请输入18位身份证号码', trigger: 'blur'}],
           site: [{required: true, message: '必填', trigger: 'blur'},],
-          phone: [{required: true, message: '必填', trigger: 'blur'},],
-          info: [{required: true, message: '必填', trigger: 'blur'},],
+          phone: [{required: true, message: '必填', trigger: 'blur'},{pattern: /^1[34578]\d{9}$/,message: '目前只支持中国大陆的手机号码',}],
+          info: [{required: true, message: '必填', trigger: 'blur'},{ max: 150, message: '简介字数在150字以内', trigger: 'blur'}],
         }
       }
     },
