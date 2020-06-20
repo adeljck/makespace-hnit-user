@@ -4,58 +4,165 @@
       <div slot="header" class="clearfix">
         <span>找回密码</span>
       </div>
-      <el-form :rules="rules" :model="ruleForm" ref="ruleForm" class="demo-ruleForm" :status-icon="true">
-        <el-form-item prop="count" label="输入需要找回密码的账号">
-          <el-input v-model="ruleForm.count" v-if="active==0" placeholder="学号/手机号"></el-input>
+      <el-form v-if="active==0" :rules="rules" :model="ruleForm" ref="ruleForm" class="demo-ruleForm"
+               :status-icon="true">
+        <el-form-item prop="sid" label="输入需要找回密码的用户学号">
+          <el-input v-model="ruleForm.sid" placeholder="学号"></el-input>
+        </el-form-item>
+        <el-form-item prop="email" label="输入需要找回密码账号的邮箱">
+          <el-input v-model="ruleForm.email" placeholder="邮箱"></el-input>
+        </el-form-item>
+        <el-form-item prop="phone" label="输入需要找回密码账号的电话">
+          <el-input v-model="ruleForm.phone" placeholder="电话"></el-input>
         </el-form-item>
       </el-form>
-      <el-steps :active="active" finish-status="success" align-center>
-        <el-step title="需要找回密码的账号"></el-step>
-        <el-step title="步骤 2"></el-step>
-        <el-step title="步骤 3"></el-step>
+      <el-form v-if="active==1" :rules="pwdrules" :model="changedpwd" ref="changedpwd" class="demo-ruleForm"
+               :status-icon="true">
+        <el-form-item prop="password" label="输入新密码">
+          <el-input v-model="changedpwd.password" placeholder="密码"></el-input>
+        </el-form-item>
+        <el-form-item prop="repassword" label="再次输入新密码">
+          <el-input v-model="changedpwd.repassword" placeholder="密码"></el-input>
+        </el-form-item>
+      </el-form>
+      <el-steps :active="active" finish-status="success" :align-center="true">
+        <el-step title="密码找回基础信息"></el-step>
+        <el-step title="重置密码"></el-step>
+        <el-step title="完成"></el-step>
       </el-steps>
-      <el-button style="margin-top: 12px;" @click="next" :disabled="ok">下一步</el-button>
-
+      <el-button style="margin-top: 12px;" @click="next">下一步</el-button>
+      <br>
+      <br>
+      <el-button style="float: right; padding: 3px 0" type="text" @click="toenterprise">企业用户找回</el-button>
     </el-card>
   </div>
 </template>
 
 <script>
   export default {
-    name: "forget.vue",
+    name: "forget",
     data() {
-      let inDatabase = (rule, value, callback) => {
-        if (value !== this.ruleForm.password) {
+      let validatePass = (rule, value, callback) => {
+        if (value !== this.changedpwd.password) {
           callback(new Error('两次输入密码不一致!'));
         } else {
           callback();
         }
       };
       return {
-        rules: {
-          count: ""
+        active: 0,
+        changedpwd: {
+          password: "",
+          repassword: "",
         },
         ruleForm: {
-          count: [
-            {
-              required: true,
-              message: '请输入账号',
-              trigger: 'blur',
-            },
-          ]
+          sid: "",
+          email: "",
+          phone: "",
         },
-        active: 0,
-        ok: false,
+        pwdrules: {
+          password: [
+            {required: true, message: '请输入密码', trigger: 'blur'},
+            {min: 7, max: 16, message: '密码长度必须是3-8位', trigger: 'change'}
+          ],
+          repassword: [
+            {required: true, message: '请再次输入密码', trigger: 'blur'},
+            {validator: validatePass, trigger: 'change'}
+          ],
+        },
+        rules: {
+          sid: [
+            {
+              min: 11,
+              max: 11,
+              required: true,
+              pattern: /^1\d{10}$/,//可以写正则表达式呦呦呦
+              message: '请正确填写你的学号',
+              trigger: 'blur'
+            },
+          ],
+          phone: [{
+            required: true,
+            pattern: /^1[34578]\d{9}$/,//可以写正则表达式呦呦呦
+            message: '请正确填写手机号',
+            trigger: 'blur'
+          }],
+          email: [{
+            required: true,//是否必填
+            message: '请输入邮箱地址',//错误提示信息
+            trigger: 'blur'//检验方式（blur为鼠标点击其他地方，）
+          },
+            {
+              type: 'email',//要检验的类型（number，email，date等）
+              message: '请输入正确的邮箱地址',
+              trigger: ['change']
+            }
+          ]
+        }
       }
     },
-      methods:{
-        next()
-        {
-          if (this.active++ > 2) this.active = 0;
+    methods: {
+      toenterprise() {
+        this.$router.push({path: '/Enforget'})
+      },
+      next() {
+        if (this.active == 0) {
+          this.$refs['ruleForm'].validate((valid) => {
+            if (valid) {
+              this.$axios.post('forget', this.ruleForm).then(response => {
+                if (response.data.status == 200) {
+                  localStorage.clear()
+                  localStorage.setItem("token", response.data.data.token);
+                  localStorage.setItem("user", response.data.data.name);
+                  localStorage.setItem("_id", response.data.data._id);
+                  this.active += 1;
+                } else {
+                  this.$message({
+                    message: response.data.msg,
+                    type: "warning"
+                  })
+                }
+              }).catch(
+                err => {
+                  this.$message({
+                    message: "服务器开了个小差",
+                    type: "warning"
+                  })
+                }
+              )
+            }
+          })
+        } else if (this.active == 1) {
+          this.$refs['changedpwd'].validate((valid) => {
+            if (valid) {
+              this.$axios.post('forget/changepassword', this.changedpwd).then(response => {
+                if (response.data.status == 200) {
+                  this.$message({
+                    message: "重置密码成功，跳转至登陆页",
+                    type: "success"
+                  })
+                  this.$router.push({path: '/Login'})
+                  this.active += 1;
+                } else {
+                  this.$message({
+                    message: response.data.msg,
+                    type: "warning"
+                  })
+                }
+              }).catch(
+                err => {
+                  this.$message({
+                    message: "服务器开了个小差",
+                    type: "warning"
+                  })
+                }
+              )
+            }
+          })
         }
-      ,
-      }
+      },
     }
+  }
 </script>
 
 <style scoped>

@@ -16,18 +16,19 @@
             <use class="text" xlink:href="#s-text"></use>
           </svg>
         </el-menu-item>
-        <el-submenu index="1" style="float: right" v-if="this.$loginStatus">
-          <template slot="title">{{this.$store.username}}</template>
-          <el-menu-item index="5-1" class="el-icon-user-solid">个人中心</el-menu-item>
-          <el-menu-item index="5-2" class="el-icon-baseball">创建团队</el-menu-item>
-          <el-menu-item index="5-3" class="el-icon-delete">退出登陆</el-menu-item>
+        <el-submenu index="1" style="float: right" v-if="loginStatus">
+          <template slot="title">{{user}}</template>
+          <el-menu-item index="5-1" class="el-icon-user-solid" @click="tome">个人中心</el-menu-item>
+          <el-menu-item index="5-2" class="el-icon-plus" v-if="role==2">项目发布</el-menu-item>
+          <el-menu-item index="5-3" class="el-icon-data-line">活动发布</el-menu-item>
+          <el-menu-item index="5-4" class="el-icon-delete">退出登陆</el-menu-item>
         </el-submenu>
-        <el-menu-item style="float: right;" index="2" v-if="!this.$loginStatus">
+        <el-menu-item style="float: right;" index="2" v-if="!loginStatus">
           <div>
             <i class="el-icon-bell"></i>登录
           </div>
         </el-menu-item>
-        <el-menu-item style="float: right;" index="3" v-if="!this.$loginStatus">
+        <el-menu-item style="float: right;" index="3" v-if="!loginStatus">
           <div>
             <i class="el-icon-bell"></i>注册
           </div>
@@ -44,15 +45,10 @@
         </el-menu-item>
         <el-menu-item style="float: right" index="7">
           <div>
-            <i class="el-icon-edit-outline"></i>加入团队
-          </div>
-        </el-menu-item>
-        <el-menu-item style="float: right" index="8">
-          <div>
             <i class="el-icon-edit-outline"></i>企业入驻
           </div>
         </el-menu-item>
-        <el-menu-item style="float: right" index="9">
+        <el-menu-item style="float: right" index="8">
           <div>
             <i class="el-icon-s-home"></i>首页
           </div>
@@ -64,28 +60,43 @@
 <script>
   export default {
     name: "Header",
+    created() {
+      this.check()
+    },
     data() {
       return {
+        dialogVissable: false,
         activeIndex: '0',
+        loginStatus: true,
+        user: "",
+        role: -1
       };
 
     },
     methods: {
-      back() {
-        this.$router.push({path: '/'})
+      tome() {
+        this.$router.push({path: '/me'})
       },
-      ApplyNow() {
-        this.$router.push({path: '/NewApply'})
-      },
-      logout() {
-        this.$store.state.loginStatus = false
+      check() {
+        this.$axios.get('token/check').then(
+          response => {
+            if (response.data.status == 0) {
+              this.user = localStorage.user
+              this.role = localStorage.role
+            } else {
+              this.loginStatus = false
+              localStorage.clear()
+            }
+          }
+        )
       },
       handleSelect(index) {
-        console.log(index)
         switch (index) {
           case '0':
-          case '9':
+            this.$router.push({path: '/'})
+          case '8':
             this.$router.push({path: '/'});
+            this.check()
             break;
           case '2':
             this.$router.push({path: '/Login'});
@@ -94,17 +105,37 @@
             this.$router.push({path: '/Registe'});
             break;
           case '4':
-            this.$router.push({path: '/Require'});
+            this.$router.push({path: '/Requires'});
+            this.check()
             break;
           case '6':
-            this.$router.push({path: '/Activity'});
-            break;
-          case '8':
-            this.$router.push({path: '/EnterPriseApply'});
+            this.$router.push({path: '/Activities'});
+            this.check()
             break;
           case '7':
-            this.$data.visible = false;
-            this.$router.push({path: '/JoinTeam'});
+            this.$router.push({path: '/EnterPriseApply'});
+            this.check()
+            break;
+          case "5-3":
+            this.$router.push({path: '/AddActivity'})
+            break;
+          case "5-2":
+            this.$router.push({path: '/AddRequire'})
+            break;
+          case "5-4":
+            this.$confirm('是否退出登录？', '登出', {
+              confirmButtonText: '登出',
+              cancelButtonText: '点错了',
+              type: 'warning'
+            }).then(() => {
+              this.loginStatus = false
+              localStorage.clear()
+              this.$message({
+                type: 'success',
+                message: '登出成功!'
+              });
+              this.$router.push({path: '/'})
+            })
             break;
         }
       }

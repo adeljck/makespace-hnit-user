@@ -4,12 +4,12 @@
       <div class="animated flipInX">
         <el-card style="width: 100vw;min-width:1000px;margin-left:auto;margin-right: auto" class="card1">
           <div style="width: 350px;height: 80px;margin-right: auto;margin-left: auto">
-            <div class="ad" style="float: left" @click="ApplyNow">
+            <div class="ad" style="float: left" @click="toenterprise">
               <el-tooltip class="item" effect="dark" content="快点击加入吧" placement="top">
                 <i style="font-size: 80px;color: white" class="el-icon-circle-plus-outline"></i>
               </el-tooltip>
             </div>
-            <div><span style="font-size: 30px;color:white;font-weight: 600">点击立即加入湖南工<i class="el-icon-back"></i>学院创客空间</span>
+            <div><span style="font-size: 30px;color:white;font-weight: 600">企业用户加入湖南工<i class="el-icon-back"></i>学院创客空间</span>
             </div>
           </div>
         </el-card>
@@ -53,10 +53,10 @@
             <el-col style="width: 30%">
               <div class="tab2">
                 <div style="height: 50px;"></div>
-                <el-tooltip class="item" effect="dark" content="点击查看优秀团队并加入他们" placement="top">
+                <el-tooltip class="item" effect="dark" content="点击查看接手需求" placement="top">
                   <div class="backImg2" @click="toJoin">
                     <div style="height:50px;"></div>
-                    <span style="font-family: 幼圆;color: white;font-size: 60px;font-weight: bold">查看<br/>优秀团队</span><br/>
+                    <span style="font-family: 幼圆;color: white;font-size: 60px;font-weight: bold">查看<br/>所有需求</span><br/>
                     <span style="font-family: 幼圆;color: white;font-size: 60px;font-weight: bold"><i
                       class="el-icon-search"></i></span>
                   </div>
@@ -131,23 +131,15 @@
     data() {
       return {
         message: "ok",
-        isLogin: false
+        // isLogin: false
       }
     },
     methods: {
-      ApplyNow() {
-        if (this.isLogin) {
-          this.$router.push('/NewApply')
-        } else {
-          this.$message({
-            message: '你还未登陆，跳转至登陆页面',
-            type: "warning",
-          });
-          this.$router.push('/Login')
-        }
-      },
       toJoin(){
-        this.$router.push('/JoinTeam')
+        this.$router.push({path: '/Require'})
+      },
+      toenterprise(){
+        this.$router.push({path: '/EnterPriseApply'})
       }
     }
 

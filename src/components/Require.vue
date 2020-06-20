@@ -1,103 +1,49 @@
 <template>
-  <div class="nav">
-    <el-container>
-      <el-main>
-        <el-card>
-          <div slot="header" class="clearfix">
-            <span>所有需求</span>
-          </div>
-          <el-card>hahahah</el-card>
-          <el-card>hahahah</el-card>
-          <el-card>hahahah</el-card>
-          <el-card>hahahah</el-card>
-          <el-card>hahahah</el-card><el-card>hahahah</el-card>
-        </el-card>
-        <el-card>
-          <el-pagination
-            background
-            :current-page="currentPage"
-            layout="prev, pager, next"
-            :total="total">
-          </el-pagination>
-        </el-card>
-      </el-main>
-    </el-container>
+  <el-card>
+    <div>{{datas.project_name}}</div>
+    <span>开始时间{{datas.start_time}}</span>
+    <span>结束时间{{datas.stop_time}}</span>
+    <div>
+      {{datas.info}}
+    </div>
+    <div v-for="(i, index) in attach" :key="index">
+      <a :href="i.url">附件{{index+1}}</a>
+    </div>
+    <div v-for="(i, index) in image" :key="index">
+      <img :src="i.url">
+    </div>
 
-  </div>
-
+     </el-card>
 </template>
 
 <script>
   export default {
+    mounted() {
+      this.getdetail()
+    },
     name: "Require",
     data() {
       return {
-        total: 20,
-        currentPage:1,
-        pagesize:15,
-        datas: [
-          {
-            name: "智能机器人",
-            money: "100000",
-            info: "做一个智能机器人",
-            status: "1",
-            start: "20200305",
-            stop: "20200327",
-            id: "",
-          },
-          {
-            name: "智能机器人",
-            money: "100000",
-            info: "做一个智能机器人",
-            status: "1",
-            start: "20200305",
-            stop: "20200327",
-            id: "",
-          },
-          {
-            name: "智能机器人",
-            money: "100000",
-            info: "做一个智能机器人",
-            status: "1",
-            start: "20200305",
-            stop: "20200327",
-            id: "",
-          }, {
-            name: "智能机器人",
-            money: "100000",
-            info: "做一个智能机器人",
-            status: "1",
-            start: "20200305",
-            stop: "20200327",
-            id: "",
-          }
-        ],
+        id: this.$route.query.id,
+        datas: "",
+        image:"",
+        attach:""
       }
     },
     methods: {
-      load() {
-        this.count += 2
-      },
+      getdetail() {
+        this.$axios.get("/project?id=" + this.id).then(
+          response => {
+            this.datas = response.data.data
+            this.image = response.data.data.image
+            this.attach = response.data.data.attach
+          }
+        )
+      }
     }
   }
 </script>
 
 <style scoped>
-  .el-main {
-    color: #333;
-    text-align: center;
-    line-height: 160px;
-  }
-.el-footer{
-  height:60px;
-  position:fixed;
-  bottom:0;
-  left:0px;
-  width: 100%
-}
-  body > .el-container {
-    margin-bottom: 40px;
-    margin-top: 50px;
-  }
 
 </style>

@@ -36,6 +36,10 @@
 </template>
 <script>
   export default {
+    created() {
+      this.check();
+      this
+    },
     data() {
       return {
         input: '',
@@ -54,14 +58,26 @@
       }
     },
     methods: {
+      check() {
+        if (localStorage.token) {
+          this.$axios.get('token/check').then(
+            response => {
+              if (response.data.status == 0) {
+                this.$router.push({path: '/'})
+              }
+            })
+        }
+      },
       linkto() {
         this.$refs['formData'].validate((valid) => {
           if (valid) {
-            console.log(this.formData)
             this.$axios.post('login', this.formData).then(
               response => {
                 if (response.data.status != 200) {
-                  console.log(response.data)
+                  this.$message({
+                    message: response.data.msg,
+                    type: "warning"
+                  })
                 } else {
                   this.$message({
                     message: "登陆成功,正在跳转至首页",
@@ -70,6 +86,7 @@
                   localStorage.setItem("token", response.data.data.token);
                   localStorage.setItem("user", response.data.data.name);
                   localStorage.setItem("_id", response.data.data._id);
+                  localStorage.setItem("role", response.data.data.role);
                   this.$router.push({path: '/'})
                 }
               }
@@ -93,7 +110,7 @@
         this.$router.push({path: '/Registe'})
       },
       toforget() {
-        alert("forget")
+        this.$router.push({path: '/Forget'})
       },
       back() {
         this.$router.push({path: '/'})

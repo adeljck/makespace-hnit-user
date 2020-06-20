@@ -4,12 +4,12 @@
       <div slot="header" class="clearfix">
         <span>湖南工学院创客空间注册</span>
       </div>
-      <el-form :rules="rules" :model="ruleForm" ref="ruleForm" class="demo-ruleForm" :status-icon="true">
+      <el-form :rules="rules" :model="ruleForm" ref="ruleForm" :status-icon="true">
         <el-form-item prop="name">
           <el-input v-model="ruleForm.name" clearable placeholder="姓名"></el-input>
         </el-form-item>
         <el-form-item prop="academy">
-          <el-select v-model="ruleForm.academy" placeholder="院系" style="width: 100%">
+          <el-select v-model="ruleForm.academy" placeholder="院系" style="width: 100%" @change="handleChange">
             <el-option
               v-for="item in academys"
               :key="item.value"
@@ -19,7 +19,14 @@
           </el-select>
         </el-form-item>
         <el-form-item prop="major">
-          <el-input v-model="ruleForm.major" clearable placeholder="专业"></el-input>
+          <el-select v-model="ruleForm.major" placeholder="专业" style="width: 100%">
+            <el-option
+              v-for="item in majors"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item prop="class">
           <el-input v-model="ruleForm.class" clearable placeholder="班级"></el-input>
@@ -54,6 +61,7 @@
       <el-button type="primary" style="width: 100%" @click="submitForm('ruleForm')" :loading="loading"
                  :disabled="disabled">点我注册
       </el-button>
+      <el-button style="float: right; padding: 3px 0" type="text" @click="toenregiste">企业用户?</el-button>
       <el-button style="float: right; padding: 3px 0" type="text" @click="login">已有账号?登陆</el-button>
     </el-card>
   </div>
@@ -61,6 +69,9 @@
 
 <script>
   export default {
+    mounted() {
+      this.getaccademy()
+    },
     name: "Registe",
     data() {
       let validatePass = (rule, value, callback) => {
@@ -144,28 +155,8 @@
             {validator: validatePass, trigger: 'change'}
           ]
         },
-        academys: [{
-          value: '计算机与信息科学学院',
-          label: '计算机与信息科学学院'
-        }, {
-          value: '机械学院',
-          label: '机械学院'
-        }, {
-          value: '安工学院',
-          label: '安工学院'
-        }, {
-          value: '建筑工程学院',
-          label: '建筑工程学院'
-        }, {
-          value: '经管学院',
-          label: '经管学院'
-        }, {
-          value: '建工学院',
-          label: '建工学院'
-        }, {
-          value: "材化学院",
-          labell: "材化学院"
-        }],
+        academys: [],
+        majors: [],
         loading: false,
         disabled: false,
         datas: ""
@@ -173,14 +164,46 @@
     },
 
     methods: {
+      handleChange() {
+        var majors = []
+        for (var i = 0, len = this.datas.length; i < len; i++) {
+          if (this.datas[i].name == this.ruleForm.academy) {
+            for (var k = 0, klen = this.datas[i].major.length; k < klen; k++) {
+              majors.push(
+                {
+                  value: this.datas[i].major[k],
+                  label: this.datas[i].major[k],
+                }
+              )
+            }
+          }
+        }
+        this.majors = majors
+      },
+      getaccademy() {
+        this.$axios.get('academy').then(response => {
+          if (response.data.status == 200) {
+            this.datas = response.data.data.items
+            for (var i = 0, len = this.datas.length; i < len; i++) {
+              this.academys.push({
+                value: this.datas[i].name,
+                label: this.datas[i].name,
+              })
+            }
+          }
+        })
+      },
       login() {
         this.$router.push({path: '/Login'})
       },
+      toenregiste() {
+        this.$router.push({path: '/EnRegiste'})
+      },
       submitForm(formName) {
-        this.loading = true;
-        this.disabled = true;
         this.$refs[formName].validate((valid) => {
           if (valid) {
+            this.loading = true;
+            this.disabled = true;
             this.$axios.post('registe', this.ruleForm).then(
               response => {
                 if (response.data.status == 200) {
@@ -189,10 +212,18 @@
                     type: "success"
                   })
                   this.$router.push({path: '/Login'})
+                }else{
+                  this.$message({
+                    message: response.data.msg,
+                    type: "warning"
+                  })
                 }
               })
           } else {
-            console.log('error submit!!');
+            this.$message({
+              message: "参数错误",
+              type: "warning"
+            })
             return false;
           }
         });

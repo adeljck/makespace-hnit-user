@@ -6,7 +6,7 @@
     <div>
       <el-card style="background-color: transparent;">
         <el-form ref="submitForm" :model="submitForm" :rules="submitRules" label-width="80px"
-                 :label-position="position" :status-icon="true">
+                 :status-icon="true">
           <el-row :gutter="10">
             <el-col :span="12" :pull="1">
               <el-form-item prop="name">
@@ -59,7 +59,7 @@
               </el-form-item>
             </el-col>
             <el-col :span="12" :pull="1">
-              <el-form-item prop="buildtime">
+              <el-form-item prop="date">
                 <el-date-picker
                   v-model="submitForm.date"
                   type="date"
@@ -99,9 +99,31 @@
 <script>
   export default {
     name: "EnterPriseApply",
+    mounted() {
+      this.check()
+      this.getindustry();
+      if (localStorage.token) {
+        if (localStorage.role == 1) {
+          this.$alert('你没有权限操作', '', {
+            confirmButtonText: '确定',
+            callback: action => {
+              this.$router.push({path: '/'})
+            }
+          });
+        }
+      } else {
+        this.$alert('登陆以使用本功能', '', {
+          confirmButtonText: '确定',
+          callback: action => {
+            this.$router.push({path: '/Login'})
+          }
+        });
+      }
+    },
     data() {
       return {
         activeName: 'first',
+        loading: false,
         submitForm: {
           name: "",
           site: "",
@@ -114,23 +136,8 @@
           companycode: "",
           info: "",
         },
-        industries: [{
-          value: '计算机/互联网',
-          label: '计算机/互联网'
-        }, {
-          value: '保险',
-          label: '保险'
-        }, {
-          value: '金融',
-          label: '金融'
-        }, {
-          value: '通讯',
-          label: '通讯'
-        }, {
-          value: '军工',
-          label: '军工'
-        }],
-        submitRules:{
+        industries: [],
+        submitRules: {
           name: [
             {required: true, message: '必填', trigger: 'blur'},
             {min: 2, max: 10, message: '长度在 2 到 10 个字符', trigger: 'blur'}
@@ -155,30 +162,102 @@
             message: '请选择行业',
             trigger: 'change'
           }],
-          buildtime: [{
+          date: [{
             required: true,
             message: '请选择日期',
             trigger: 'change'
           }],
-          companycode: [{required: true, message: '必填', trigger: 'blur'},{min: 18, max: 18, message: '请输入18位统一性用代码', trigger: 'blur'}],
-          legalid: [{required: true, message: '必填', trigger: 'blur'},{min: 18, max: 18, message: '请输入18位身份证号码', trigger: 'blur'}],
+          companycode: [{required: true, message: '必填', trigger: 'blur'}, {
+            min: 18,
+            max: 18,
+            message: '请输入18位统一性用代码',
+            trigger: 'blur'
+          }],
+          legalid: [{required: true, message: '必填', trigger: 'blur'}, {
+            min: 18,
+            max: 18,
+            message: '请输入18位身份证号码',
+            trigger: 'blur'
+          }],
           site: [{required: true, message: '必填', trigger: 'blur'},],
-          phone: [{required: true, message: '必填', trigger: 'blur'},{pattern: /^1[34578]\d{9}$/,message: '目前只支持中国大陆的手机号码',}],
-          info: [{required: true, message: '必填', trigger: 'blur'},{ max: 150, message: '简介字数在150字以内', trigger: 'blur'}],
+          phone: [{required: true, message: '必填', trigger: 'blur'}, {
+            pattern: /^1[34578]\d{9}$/,
+            message: '目前只支持中国大陆的手机号码',
+          }],
+          info: [{required: true, message: '必填', trigger: 'blur'}, {max: 150, message: '简介字数在150字以内', trigger: 'blur'}],
         }
       }
     },
     methods: {
+      check() {
+        this.$axios.get('token/check').then(
+          response => {
+            if (response.data.status == 0) {
+              this.user = localStorage.user
+              this.role = localStorage.role
+            } else {
+              this.$message.warning("登陆失效，请重新登录！")
+              this.$router.push({path:'/Login'})
+            }
+          }
+        )
+      },
+      getindustry() {
+        this.$axios.get('industry').then(response => {
+          if (response.data.status == 200) {
+            for (var i = 0, len = response.data.data.length; i < len; i++) {
+              this.industries.push({
+                value: response.data.data[i],
+                label: response.data.data[i],
+              })
+            }
+          }
+        })
+      },
       submit(formName) {
-        this.loading = true;
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            alert('submit!');
+            this.loading = true
+            this.$axios.post("enterpriseapply", this.submitForm).then(response => {
+              if (response.data.status == 200) {
+                this.$alert(
+                  '申请入驻成功，等待管理员审核', '申请入驻成功', {
+                    confirmButtonText: "确定",
+                    callback: action => {
+                      this.$router.push({path: '/'})
+
+                    }
+                  })
+              } else if (response.data.status == 40003) {
+                for (var i = 0, len = response.data.data.length; i < len; i++) {
+                  this.$message({
+                    type: "warning",
+                    message: response.data.data[i].error
+                  })
+                }
+                this.loading = false
+              } else if (response.data.status == 4003) {
+                for (var i = 0, len = response.data.data.length; i < len; i++) {
+                  this.$message({
+                    type: "warning",
+                    message: response.data.data[i].error
+                  })
+                }
+                this.loading = false
+              } else {
+                this.$message({
+                  type: "warning",
+                  message: "服务器开了点小差"
+                })
+              }
+            })
             this.loading = false
           } else {
-            console.log('error submit!!');
-            this.loading = false;
-            return false;
+            this.$message({
+              type: "warning",
+              message: valid.error()
+            })
+            this.loading = false
           }
         });
       },
